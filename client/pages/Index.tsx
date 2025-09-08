@@ -51,15 +51,15 @@ export default function Index() {
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input placeholder="Search" className="pl-8" value={q} onChange={(e) => setQ(e.target.value)} />
                   </div>
-                  <Select value={priority || undefined} onValueChange={setPriority}>
-                    <SelectTrigger className="w-[140px]"><SelectValue placeholder="Priority" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All</SelectItem>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="neutral">Neutral</SelectItem>
-                      <SelectItem value="spam">Spam</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Select value={priority} onValueChange={setPriority}>
+                  <SelectTrigger className="w-[140px]"><SelectValue placeholder="Priority" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="neutral">Neutral</SelectItem>
+                    <SelectItem value="spam">Spam</SelectItem>
+                  </SelectContent>
+                </Select>
                 </div>
                 <div className="divide-y rounded-md border">
                   {isLoading || isFetching ? (
