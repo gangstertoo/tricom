@@ -6,13 +6,30 @@ import morgan from "morgan";
 import apiRoutes from "./routes";
 import { errorHandler } from "./middleware/error";
 import { connectDB } from "./config/db";
+import { env } from "./config/env";
 
 export function createServer() {
   const app = express();
 
-  // Security & misc
-  app.use(helmet());
-  app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+  // Security & misc (allow embedding in Builder preview iframe)
+  app.use(
+    helmet({
+      frameguard: false,
+      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "frame-ancestors": [
+            "'self'",
+            env.CLIENT_URL,
+            "https://*.builder.codes",
+            "https://*.projects.builder.codes",
+          ],
+        },
+      },
+    }),
+  );
+  app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan("tiny"));
