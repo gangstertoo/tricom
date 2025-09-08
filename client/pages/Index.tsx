@@ -16,10 +16,10 @@ import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 export default function Index() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
-  const [priority, setPriority] = useState<string>("");
+  const [priority, setPriority] = useState<string>("all");
   const { data: emails = [], isLoading, isFetching } = useQuery({
     queryKey: ["emails", { q, priority }],
-    queryFn: () => listEmails({ q, priority }),
+    queryFn: () => listEmails({ q, priority: priority === "all" ? undefined : priority }),
     refetchInterval: 30000,
   });
   const [selected, setSelected] = useState<EmailDTO | null>(null);
