@@ -30,6 +30,16 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
+      // Set headers to allow embedding in Builder preview iframe
+      server.middlewares.use((req, res, next) => {
+        res.setHeader(
+          "Content-Security-Policy",
+          "frame-ancestors 'self' https://*.builder.codes https://*.projects.builder.codes https://*.builder.my https://*.projects.builder.my",
+        );
+        res.setHeader("X-Frame-Options", "ALLOWALL");
+        next();
+      });
+
       const app = createServer();
 
       // Add Express app as middleware to Vite dev server
