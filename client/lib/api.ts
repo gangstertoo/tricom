@@ -41,6 +41,7 @@ export async function startGoogleAuth(): Promise<string> {
 export async function listEmails(params?: { q?: string; priority?: string }) {
   const search = new URLSearchParams(params as any).toString();
   const res = await fetch(`/api/emails${search ? `?${search}` : ""}`, { headers: authHeaders() });
+  if (res.status === 401) return [];
   if (!res.ok) throw new Error("Failed to load emails");
   const data = (await res.json()) as { emails: EmailDTO[] };
   return data.emails;
