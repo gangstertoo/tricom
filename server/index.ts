@@ -1,23 +1,36 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
+import helmet from "helmet";
+import morgan from "morgan";
+import apiRoutes from "./routes";
+import { errorHandler } from "./middleware/error";
+import { connectDB } from "./config/db";
 
 export function createServer() {
   const app = express();
 
-  // Middleware
-  app.use(cors());
-  app.use(express.json());
+  // Security & misc
+  app.use(helmet());
+  app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+  app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ extended: true }));
+  app.use(morgan("tiny"));
 
-  // Example API routes
-  app.get("/api/ping", (_req, res) => {
-    const ping = process.env.PING_MESSAGE ?? "ping";
-    res.json({ message: ping });
+  // Health
+  app.get("/health", (_req, res) => res.json({ ok: true }));
+
+  // Connect DB lazily on first request
+  app.use(async (_req, _res, next) => {
+    await connectDB();
+    next();
   });
 
-  app.get("/api/demo", handleDemo);
+  // API routes
+  app.use("/api", apiRoutes);
+
+  // Errors
+  app.use(errorHandler);
 
   return app;
 }
