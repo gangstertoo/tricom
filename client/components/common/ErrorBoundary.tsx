@@ -1,6 +1,9 @@
 import React from "react";
 
-export class ErrorBoundary extends React.Component<{ fallback?: React.ReactNode }, { error: Error | null }> {
+export class ErrorBoundary extends React.Component<
+  { fallback?: React.ReactNode },
+  { error: Error | null }
+> {
   constructor(props: any) {
     super(props);
     this.state = { error: null };
@@ -13,11 +16,15 @@ export class ErrorBoundary extends React.Component<{ fallback?: React.ReactNode 
   }
   render() {
     if (this.state.error) {
-      return this.props.fallback || (
-        <div className="p-6 text-sm text-destructive">
-          <div className="font-semibold">Something went wrong.</div>
-          <pre className="mt-2 whitespace-pre-wrap">{this.state.error.message}</pre>
-        </div>
+      return (
+        this.props.fallback || (
+          <div className="p-6 text-sm text-destructive">
+            <div className="font-semibold">Something went wrong.</div>
+            <pre className="mt-2 whitespace-pre-wrap">
+              {this.state.error.message}
+            </pre>
+          </div>
+        )
       );
     }
     return this.props.children as any;

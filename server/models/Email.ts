@@ -35,7 +35,11 @@ const EmailSchema = new Schema<IEmail>(
     bodyText: String,
     date: { type: Date, required: true },
     labels: { type: [String], default: [] },
-    priority: { type: String, enum: ["spam", "neutral", "urgent"], index: true },
+    priority: {
+      type: String,
+      enum: ["spam", "neutral", "urgent"],
+      index: true,
+    },
     aiSuggestions: { type: [String], default: [] },
     isRead: { type: Boolean, default: false },
   },

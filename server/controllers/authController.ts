@@ -53,9 +53,13 @@ export const googleCallback: RequestHandler = async (req, res, next) => {
     }
     await user.save();
 
-    const token = jwt.sign({ sub: user._id.toString(), email: user.email }, env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { sub: user._id.toString(), email: user.email },
+      env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
 
     const redirect = `${env.CLIENT_URL}/auth/callback?token=${encodeURIComponent(token)}`;
     res.redirect(302, redirect);

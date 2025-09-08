@@ -7,7 +7,11 @@ export interface AuthedRequest extends Request {
   userId?: string;
 }
 
-export function requireAuth(req: AuthedRequest, res: Response, next: NextFunction) {
+export function requireAuth(
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction,
+) {
   const token = (req.headers.authorization || "").replace("Bearer ", "");
   if (!token) return res.status(401).json({ error: "Unauthorized" });
   try {
@@ -19,7 +23,11 @@ export function requireAuth(req: AuthedRequest, res: Response, next: NextFunctio
   }
 }
 
-export async function withUser(req: AuthedRequest, _res: Response, next: NextFunction) {
+export async function withUser(
+  req: AuthedRequest,
+  _res: Response,
+  next: NextFunction,
+) {
   if (!req.userId) return next();
   const user = await User.findById(req.userId);
   (req as any).user = user;

@@ -12,14 +12,20 @@ function scorePriority(subject: string, snippet: string): Priority {
 
 export async function syncRecentEmails(user: IUser, max = 25) {
   const gmail = gmailFor(user);
-  const resp = await gmail.users.messages.list({ userId: "me", maxResults: max, q: "in:inbox" });
+  const resp = await gmail.users.messages.list({
+    userId: "me",
+    maxResults: max,
+    q: "in:inbox",
+  });
   const messages = resp.data.messages || [];
   const results: IEmail[] = [] as unknown as IEmail[];
   for (const msg of messages) {
     const full = await gmail.users.messages.get({ userId: "me", id: msg.id! });
     const payload = full.data.payload;
     const headers = payload?.headers || [];
-    const get = (name: string) => headers.find((h) => h.name?.toLowerCase() === name.toLowerCase())?.value || "";
+    const get = (name: string) =>
+      headers.find((h) => h.name?.toLowerCase() === name.toLowerCase())
+        ?.value || "";
     const subject = get("Subject");
     const from = get("From");
     const to = get("To");
@@ -31,8 +37,17 @@ export async function syncRecentEmails(user: IUser, max = 25) {
 
     const priority = scorePriority(subject, snippet);
 
-    const existing = await Email.findOne({ userId: user._id, gmailId: full.data.id });
-    const doc = existing || new Email({ userId: user._id, gmailId: full.data.id, threadId: full.data.threadId });
+    const existing = await Email.findOne({
+      userId: user._id,
+      gmailId: full.data.id,
+    });
+    const doc =
+      existing ||
+      new Email({
+        userId: user._id,
+        gmailId: full.data.id,
+        threadId: full.data.threadId,
+      });
 
     doc.set({
       from,
@@ -45,7 +60,9 @@ export async function syncRecentEmails(user: IUser, max = 25) {
       bodyText: bodyParts.text,
       priority,
       isRead: (full.data.labelIds || []).includes("UNREAD") ? false : true,
-      aiSuggestions: doc.aiSuggestions?.length ? doc.aiSuggestions : generateAISuggestions(subject, snippet),
+      aiSuggestions: doc.aiSuggestions?.length
+        ? doc.aiSuggestions
+        : generateAISuggestions(subject, snippet),
     });
 
     await doc.save();
@@ -54,7 +71,10 @@ export async function syncRecentEmails(user: IUser, max = 25) {
   return results;
 }
 
-export function generateAISuggestions(subject: string, snippet: string): string[] {
+export function generateAISuggestions(
+  subject: string,
+  snippet: string,
+): string[] {
   const base = `Subject: ${subject}\n${snippet}`;
   return [
     "Thanks for reaching out! Here’s a quick summary and next steps...",

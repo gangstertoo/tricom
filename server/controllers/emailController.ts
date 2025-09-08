@@ -1,7 +1,11 @@
 import { RequestHandler } from "express";
 import { Email } from "../models/Email";
 import { User } from "../models/User";
-import { syncRecentEmails, generateAISuggestions, suggestMeetingTimes } from "../services/emailService";
+import {
+  syncRecentEmails,
+  generateAISuggestions,
+  suggestMeetingTimes,
+} from "../services/emailService";
 import { AuthedRequest } from "../middleware/auth";
 
 export const listEmails: RequestHandler = async (req: AuthedRequest, res) => {
@@ -13,7 +17,11 @@ export const listEmails: RequestHandler = async (req: AuthedRequest, res) => {
   res.json({ emails });
 };
 
-export const syncEmails: RequestHandler = async (req: AuthedRequest, res, next) => {
+export const syncEmails: RequestHandler = async (
+  req: AuthedRequest,
+  res,
+  next,
+) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -39,7 +47,10 @@ export const aiSuggest: RequestHandler = async (req: AuthedRequest, res) => {
   res.json({ suggestions });
 };
 
-export const scheduleSuggest: RequestHandler = async (req: AuthedRequest, res) => {
+export const scheduleSuggest: RequestHandler = async (
+  req: AuthedRequest,
+  res,
+) => {
   const { attendees, durationMins, timezone } = req.body as {
     attendees: string[];
     durationMins: number;
@@ -47,6 +58,11 @@ export const scheduleSuggest: RequestHandler = async (req: AuthedRequest, res) =
   };
   const user = await User.findById(req.userId);
   if (!user) return res.status(404).json({ error: "User not found" });
-  const result = await suggestMeetingTimes(user, attendees, durationMins, timezone || user.timezone);
+  const result = await suggestMeetingTimes(
+    user,
+    attendees,
+    durationMins,
+    timezone || user.timezone,
+  );
   res.json(result);
 };

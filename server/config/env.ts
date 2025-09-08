@@ -23,7 +23,11 @@ export const env: Env = {
 };
 
 export function ensureGoogleEnv() {
-  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REDIRECT_URI) {
+  if (
+    !env.GOOGLE_CLIENT_ID ||
+    !env.GOOGLE_CLIENT_SECRET ||
+    !env.GOOGLE_REDIRECT_URI
+  ) {
     throw new Error("Google OAuth environment variables are not configured");
   }
 }

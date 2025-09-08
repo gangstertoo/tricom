@@ -1,7 +1,13 @@
 import { Router } from "express";
 import { startGoogleAuth, googleCallback } from "../controllers/authController";
 import { requireAuth } from "../middleware/auth";
-import { listEmails, syncEmails, getEmail, aiSuggest, scheduleSuggest } from "../controllers/emailController";
+import {
+  listEmails,
+  syncEmails,
+  getEmail,
+  aiSuggest,
+  scheduleSuggest,
+} from "../controllers/emailController";
 import { createEvent } from "../controllers/calendarController";
 
 const router = Router();

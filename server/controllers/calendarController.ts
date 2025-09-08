@@ -3,7 +3,11 @@ import { User } from "../models/User";
 import { createCalendarEvent } from "../services/calendarService";
 import { AuthedRequest } from "../middleware/auth";
 
-export const createEvent: RequestHandler = async (req: AuthedRequest, res, next) => {
+export const createEvent: RequestHandler = async (
+  req: AuthedRequest,
+  res,
+  next,
+) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -16,7 +20,14 @@ export const createEvent: RequestHandler = async (req: AuthedRequest, res, next)
       description?: string;
     };
 
-    const event = await createCalendarEvent(user, title, attendees, startISO, endISO, description);
+    const event = await createCalendarEvent(
+      user,
+      title,
+      attendees,
+      startISO,
+      endISO,
+      description,
+    );
     res.json({ event });
   } catch (e) {
     next(e);

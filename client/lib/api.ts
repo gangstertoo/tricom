@@ -22,7 +22,10 @@ export interface SuggestSlotsResponse {
   slots: { start: string; end: string }[];
 }
 
-export const useAuthStore = create<{ token: string | null; setToken: (t: string | null) => void }>((set) => ({
+export const useAuthStore = create<{
+  token: string | null;
+  setToken: (t: string | null) => void;
+}>((set) => ({
   token: null,
   setToken: (t) => set({ token: t }),
 }));
@@ -40,7 +43,9 @@ export async function startGoogleAuth(): Promise<string> {
 
 export async function listEmails(params?: { q?: string; priority?: string }) {
   const search = new URLSearchParams(params as any).toString();
-  const res = await fetch(`/api/emails${search ? `?${search}` : ""}`, { headers: authHeaders() });
+  const res = await fetch(`/api/emails${search ? `?${search}` : ""}`, {
+    headers: authHeaders(),
+  });
   if (res.status === 401) return [];
   if (!res.ok) throw new Error("Failed to load emails");
   const data = (await res.json()) as { emails: EmailDTO[] };
@@ -48,7 +53,10 @@ export async function listEmails(params?: { q?: string; priority?: string }) {
 }
 
 export async function syncEmails() {
-  const res = await fetch(`/api/emails/sync`, { method: "POST", headers: { "Content-Type": "application/json", ...authHeaders() } });
+  const res = await fetch(`/api/emails/sync`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
   if (!res.ok) throw new Error("Failed to sync emails");
   return (await res.json()) as { count: number };
 }
@@ -60,12 +68,19 @@ export async function getEmail(id: string) {
 }
 
 export async function aiSuggest(id: string) {
-  const res = await fetch(`/api/emails/${id}/ai-suggest`, { method: "POST", headers: { "Content-Type": "application/json", ...authHeaders() } });
+  const res = await fetch(`/api/emails/${id}/ai-suggest`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
   if (!res.ok) throw new Error("AI suggestion failed");
   return (await res.json()) as { suggestions: string[] };
 }
 
-export async function scheduleSuggest(input: { attendees: string[]; durationMins: number; timezone: string }) {
+export async function scheduleSuggest(input: {
+  attendees: string[];
+  durationMins: number;
+  timezone: string;
+}) {
   const res = await fetch(`/api/schedule/suggest`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders() },
@@ -75,7 +90,13 @@ export async function scheduleSuggest(input: { attendees: string[]; durationMins
   return (await res.json()) as SuggestSlotsResponse;
 }
 
-export async function createCalendarEvent(input: { title: string; attendees: string[]; startISO: string; endISO: string; description?: string }) {
+export async function createCalendarEvent(input: {
+  title: string;
+  attendees: string[];
+  startISO: string;
+  endISO: string;
+  description?: string;
+}) {
   const res = await fetch(`/api/calendar/events`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders() },

@@ -1,7 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Inbox, CalendarClock, Settings, FileText, Filter, Star } from "lucide-react";
+import {
+  Inbox,
+  CalendarClock,
+  Settings,
+  FileText,
+  Filter,
+  Star,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const nav = [
@@ -21,7 +28,16 @@ export function Sidebar() {
       </div>
       <nav className="space-y-1">
         {nav.map((n) => (
-          <NavLink key={n.to} to={n.to} className={({ isActive }) => cn("group flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-muted", isActive && "bg-muted text-foreground font-medium") }>
+          <NavLink
+            key={n.to}
+            to={n.to}
+            className={({ isActive }) =>
+              cn(
+                "group flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-muted",
+                isActive && "bg-muted text-foreground font-medium",
+              )
+            }
+          >
             <n.icon className="h-4 w-4" />
             <span className="flex-1">{n.label}</span>
             {n.to === "/" && <Badge variant="secondary">New</Badge>}
@@ -29,8 +45,11 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="rounded-lg bg-gradient-to-br from-primary/10 to-accent/20 p-4 text-sm">
-        <div className="font-semibold mb-1 flex items-center gap-1"><Star className="h-4 w-4"/> Pro tip</div>
-        Use Smart Scheduling to propose times that automatically adapt to your customer’s timezone.
+        <div className="font-semibold mb-1 flex items-center gap-1">
+          <Star className="h-4 w-4" /> Pro tip
+        </div>
+        Use Smart Scheduling to propose times that automatically adapt to your
+        customer’s timezone.
       </div>
     </aside>
   );

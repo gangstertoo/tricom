@@ -22,14 +22,20 @@ export function Header() {
           <span>Email Workflow</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" onClick={onConnect}>Connect Google</Button>
+          <Button variant="outline" onClick={onConnect}>
+            Connect Google
+          </Button>
           <Button
             size="icon"
             variant="ghost"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label="Toggle theme"
           >
-            {mounted && theme === "dark" ? <SunMedium className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {mounted && theme === "dark" ? (
+              <SunMedium className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
