@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 import { listEmails, syncEmails, EmailDTO, aiSuggest, scheduleSuggest, createCalendarEvent } from "@/lib/api";
 import { CalendarClock, MailOpen, RefreshCw, Search, Send, Sparkles } from "lucide-react";
 import { format } from "date-fns";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 export default function Index() {
   const qc = useQueryClient();
