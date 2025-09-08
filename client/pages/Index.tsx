@@ -33,71 +33,73 @@ export default function Index() {
   return (
     <AppShell>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-base">Inbox</CardTitle>
-              <div className="flex items-center gap-2">
-                <Button size="icon" variant="outline" onClick={() => sync.mutate()} disabled={sync.isPending}>
-                  <RefreshCw className={"h-4 w-4" + (sync.isPending ? " animate-spin" : "")} />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search" className="pl-8" value={q} onChange={(e) => setQ(e.target.value)} />
+        <ErrorBoundary>
+          <div className="lg:col-span-1 space-y-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-base">Inbox</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Button size="icon" variant="outline" onClick={() => sync.mutate()} disabled={sync.isPending}>
+                    <RefreshCw className={"h-4 w-4" + (sync.isPending ? " animate-spin" : "")} />
+                  </Button>
                 </div>
-                <Select value={priority || undefined} onValueChange={setPriority}>
-                  <SelectTrigger className="w-[140px]"><SelectValue placeholder="Priority" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                    <SelectItem value="neutral">Neutral</SelectItem>
-                    <SelectItem value="spam">Spam</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="divide-y rounded-md border">
-                {isLoading || isFetching ? (
-                  <div className="p-6 text-center text-muted-foreground">Loading…</div>
-                ) : emails.length === 0 ? (
-                  <div className="p-6 text-center text-muted-foreground">No emails found</div>
-                ) : (
-                  emails.map((e) => (
-                    <button key={e._id} className="w-full text-left p-3 hover:bg-muted/50 focus:bg-muted/50" onClick={() => onOpen(e)}>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={e.priority === "urgent" ? "destructive" : e.priority === "neutral" ? "secondary" : "outline"}>
-                          {e.priority}
-                        </Badge>
-                        <div className="truncate font-medium">{e.subject || "(no subject)"}</div>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
-                        <MailOpen className="h-3 w-3" /> {e.from}
-                        <span>•</span>
-                        {format(new Date(e.date), "PP p")}
-                      </div>
-                      <div className="text-sm line-clamp-2 mt-1 text-muted-foreground">{e.snippet}</div>
-                    </button>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-2">
-          {!selected ? (
-            <Card className="h-full">
-              <CardContent className="h-full flex items-center justify-center text-muted-foreground">
-                Select an email to see details and AI suggestions.
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="Search" className="pl-8" value={q} onChange={(e) => setQ(e.target.value)} />
+                  </div>
+                  <Select value={priority || undefined} onValueChange={setPriority}>
+                    <SelectTrigger className="w-[140px]"><SelectValue placeholder="Priority" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                      <SelectItem value="neutral">Neutral</SelectItem>
+                      <SelectItem value="spam">Spam</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="divide-y rounded-md border">
+                  {isLoading || isFetching ? (
+                    <div className="p-6 text-center text-muted-foreground">Loading…</div>
+                  ) : emails.length === 0 ? (
+                    <div className="p-6 text-center text-muted-foreground">No emails found</div>
+                  ) : (
+                    emails.map((e) => (
+                      <button key={e._id} className="w-full text-left p-3 hover:bg-muted/50 focus:bg-muted/50" onClick={() => onOpen(e)}>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={e.priority === "urgent" ? "destructive" : e.priority === "neutral" ? "secondary" : "outline"}>
+                            {e.priority}
+                          </Badge>
+                          <div className="truncate font-medium">{e.subject || "(no subject)"}</div>
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+                          <MailOpen className="h-3 w-3" /> {e.from}
+                          <span>•</span>
+                          {format(new Date(e.date), "PP p")}
+                        </div>
+                        <div className="text-sm line-clamp-2 mt-1 text-muted-foreground">{e.snippet}</div>
+                      </button>
+                    ))
+                  )}
+                </div>
               </CardContent>
             </Card>
-          ) : (
-            <EmailDetail email={selected} onRefresh={() => qc.invalidateQueries({ queryKey: ["emails"] })} />)
-          }
-        </div>
+          </div>
+
+          <div className="lg:col-span-2">
+            {!selected ? (
+              <Card className="h-full">
+                <CardContent className="h-full flex items-center justify-center text-muted-foreground">
+                  Select an email to see details and AI suggestions.
+                </CardContent>
+              </Card>
+            ) : (
+              <EmailDetail email={selected} onRefresh={() => qc.invalidateQueries({ queryKey: ["emails"] })} />)
+            }
+          </div>
+        </ErrorBoundary>
       </div>
     </AppShell>
   );
