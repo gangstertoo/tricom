@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { listEmails, syncEmails, EmailDTO, aiSuggest, scheduleSuggest, createCalendarEvent } from "@/lib/api";
+import { listEmails, syncEmails, EmailDTO, aiSuggest, scheduleSuggest, createCalendarEvent, useAuthStore, startGoogleAuth } from "@/lib/api";
 import { CalendarClock, MailOpen, RefreshCw, Search, Send, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
