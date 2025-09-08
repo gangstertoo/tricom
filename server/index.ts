@@ -16,19 +16,7 @@ export function createServer() {
     helmet({
       frameguard: false,
       crossOriginEmbedderPolicy: false,
-      contentSecurityPolicy: {
-        useDefaults: true,
-        directives: {
-          "frame-ancestors": [
-            "'self'",
-            env.CLIENT_URL,
-            "https://*.builder.codes",
-            "https://*.projects.builder.codes",
-            "https://*.builder.my",
-            "https://*.projects.builder.my",
-          ],
-        },
-      },
+      contentSecurityPolicy: false,
     }),
   );
   app.use(cors({ origin: true, credentials: true }));
