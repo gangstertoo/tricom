@@ -60,10 +60,11 @@ export async function syncRecentEmails(user: IUser, max = 25) {
       bodyText: bodyParts.text,
       priority,
       isRead: (full.data.labelIds || []).includes("UNREAD") ? false : true,
-      aiSuggestions: doc.aiSuggestions?.length
-        ? doc.aiSuggestions
-        : generateAISuggestions(subject, snippet),
     });
+
+    if (!doc.aiSuggestions?.length) {
+      doc.aiSuggestions = await generateAISuggestions(subject, snippet);
+    }
 
     await doc.save();
     results.push(doc.toObject() as IEmail);
@@ -71,16 +72,17 @@ export async function syncRecentEmails(user: IUser, max = 25) {
   return results;
 }
 
-export function generateAISuggestions(
+import { generateAIResponses, fallbackSuggestions } from "./aiService";
+
+export async function generateAISuggestions(
   subject: string,
   snippet: string,
-): string[] {
-  const base = `Subject: ${subject}\n${snippet}`;
-  return [
-    "Thanks for reaching out! Here’s a quick summary and next steps...",
-    "I can meet this week. Sharing a few time options based on your timezone.",
-    "Appreciate the update. Let’s schedule a follow-up to align on details.",
-  ].map((s) => `${s}\n\n${base}`);
+): Promise<string[]> {
+  try {
+    return await generateAIResponses(subject, snippet);
+  } catch {
+    return fallbackSuggestions(subject, snippet);
+  }
 }
 
 function collectBody(payload: any): { html?: string; text?: string } {

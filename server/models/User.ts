@@ -13,7 +13,8 @@ export interface IUser {
   email: string;
   name: string;
   picture?: string;
-  google: GoogleTokens;
+  google?: GoogleTokens;
+  passwordHash?: string;
   timezone: string;
   createdAt: Date;
   updatedAt: Date;
@@ -32,7 +33,8 @@ const UserSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     picture: { type: String },
-    google: { type: GoogleSchema, required: true },
+    passwordHash: { type: String },
+    google: { type: GoogleSchema, required: false },
     timezone: { type: String, default: "UTC" },
   },
   { timestamps: true },

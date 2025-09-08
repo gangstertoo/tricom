@@ -47,7 +47,13 @@ const EmailSchema = new Schema<IEmail>(
 );
 
 EmailSchema.index({ userId: 1, date: -1 });
-EmailSchema.index({ subject: "text", snippet: "text", bodyText: "text" });
+EmailSchema.index({
+  subject: "text",
+  snippet: "text",
+  bodyText: "text",
+  from: "text",
+  to: "text",
+});
 
 export const Email =
   (mongoose.models.Email as mongoose.Model<IEmail>) ||

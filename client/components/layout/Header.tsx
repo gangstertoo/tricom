@@ -2,16 +2,38 @@ import { Button } from "@/components/ui/button";
 import { Moon, SunMedium, Sparkles } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { startGoogleAuth } from "@/lib/api";
+import { startGoogleAuth, useAuthStore, getMe } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const token = useAuthStore((s) => s.token);
+  const setToken = useAuthStore((s) => s.setToken);
+  const navigate = useNavigate();
   useEffect(() => setMounted(true), []);
 
+  const meQuery = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
+    enabled: !!token,
+    staleTime: 60000,
+  });
+
   const onConnect = async () => {
-    const url = await startGoogleAuth();
-    window.location.href = url;
+    try {
+      const url = await startGoogleAuth();
+      if (!url) throw new Error("Missing auth URL");
+      window.location.href = url;
+    } catch (e: any) {
+      toast({
+        title: "Google connection failed",
+        description: e?.message || "Server configuration is missing.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -22,9 +44,24 @@ export function Header() {
           <span>Email Workflow</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" onClick={onConnect}>
-            Connect Google
-          </Button>
+          {!token ? (
+            <div className="flex items-center gap-2">
+              <Link to="/login"><Button variant="outline">Login</Button></Link>
+              <Link to="/register"><Button>Register</Button></Link>
+            </div>
+          ) : meQuery.data?.user?.googleConnected ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-2 py-1 rounded bg-green-500/10 text-green-700 dark:text-green-300 border border-green-500/20">
+                Google Connected
+              </span>
+              <Button variant="ghost" onClick={() => { setToken(null); navigate("/"); }}>Logout</Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={onConnect}>Connect Google</Button>
+              <Button variant="ghost" onClick={() => { setToken(null); navigate("/"); }}>Logout</Button>
+            </div>
+          )}
           <Button
             size="icon"
             variant="ghost"

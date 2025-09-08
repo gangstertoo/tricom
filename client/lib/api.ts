@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface EmailDTO {
   _id: string;
@@ -22,13 +23,22 @@ export interface SuggestSlotsResponse {
   slots: { start: string; end: string }[];
 }
 
-export const useAuthStore = create<{
-  token: string | null;
-  setToken: (t: string | null) => void;
-}>((set) => ({
-  token: null,
-  setToken: (t) => set({ token: t }),
-}));
+export const useAuthStore = create(
+  persist<{
+    token: string | null;
+    setToken: (t: string | null) => void;
+  }>(
+    (set) => ({
+      token: null,
+      setToken: (t) => set({ token: t }),
+    }),
+    {
+      name: "auth",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ token: state.token }),
+    },
+  ),
+);
 
 function authHeaders() {
   const token = useAuthStore.getState().token;
@@ -36,13 +46,23 @@ function authHeaders() {
 }
 
 export async function startGoogleAuth(): Promise<string> {
-  const res = await fetch("/api/auth/google/start");
-  const data = (await res.json()) as { url: string };
+  const res = await fetch("/api/auth/google/start", { headers: authHeaders() });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to start Google auth");
+  }
+  const data = (await res.json()) as { url?: string };
+  if (!data.url) throw new Error("Google auth URL not available. Check server env.");
   return data.url;
 }
 
 export async function listEmails(params?: { q?: string; priority?: string }) {
-  const search = new URLSearchParams(params as any).toString();
+  const searchParams = new URLSearchParams();
+  const q = params?.q?.toString().trim();
+  if (q) searchParams.set("q", q);
+  const pr = params?.priority?.toString().trim().toLowerCase();
+  if (pr && pr !== "undefined" && pr !== "null") searchParams.set("priority", pr);
+  const search = searchParams.toString();
   const res = await fetch(`/api/emails${search ? `?${search}` : ""}`, {
     headers: authHeaders(),
   });
@@ -96,6 +116,7 @@ export async function createCalendarEvent(input: {
   startISO: string;
   endISO: string;
   description?: string;
+  timezone?: string;
 }) {
   const res = await fetch(`/api/calendar/events`, {
     method: "POST",
@@ -104,4 +125,40 @@ export async function createCalendarEvent(input: {
   });
   if (!res.ok) throw new Error("Failed to create event");
   return (await res.json()) as { event: any };
+}
+
+export async function listCalendarEvents() {
+  const res = await fetch(`/api/calendar/events`, { headers: authHeaders() });
+  if (!res.ok) throw new Error("Failed to load events");
+  return (await res.json()) as { events: any[] };
+}
+
+export async function registerAccount(input: { email: string; password: string; name: string }) {
+  const res = await fetch(`/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const data = (await res.json()) as { token: string };
+  useAuthStore.getState().setToken(data.token);
+  return data;
+}
+
+export async function loginAccount(input: { email: string; password: string }) {
+  const res = await fetch(`/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const data = (await res.json()) as { token: string };
+  useAuthStore.getState().setToken(data.token);
+  return data;
+}
+
+export async function getMe() {
+  const res = await fetch(`/api/me`, { headers: authHeaders() });
+  if (!res.ok) throw new Error("Unauthorized");
+  return (await res.json()) as { user: { email: string; name: string; picture?: string; timezone: string; googleConnected?: boolean } };
 }

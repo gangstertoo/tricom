@@ -9,6 +9,8 @@ export interface Env {
   GOOGLE_CLIENT_ID: string | undefined;
   GOOGLE_CLIENT_SECRET: string | undefined;
   GOOGLE_REDIRECT_URI: string | undefined;
+  OPENROUTER_API_KEY?: string;
+  OPENROUTER_MODEL?: string;
 }
 
 export const env: Env = {
@@ -20,6 +22,8 @@ export const env: Env = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+  OPENROUTER_MODEL: process.env.OPENROUTER_MODEL,
 };
 
 export function ensureGoogleEnv() {

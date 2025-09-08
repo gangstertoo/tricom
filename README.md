@@ -1,4 +1,4 @@
-# Custom Email Workflow Tool
+# Email Workflow Tool (MERN + TypeScript)
 
 A production-ready MERN + TypeScript app that reads Gmail, suggests AI replies with priority scoring, and schedules meetings via Google Calendar with timezone handling.
 
@@ -11,57 +11,70 @@ A production-ready MERN + TypeScript app that reads Gmail, suggests AI replies w
 ## Features
 
 - Gmail OAuth, inbox sync, priority scoring (spam/neutral/urgent)
-- AI reply suggestions (extensible service hook)
+- AI reply suggestions (service-based, pluggable provider)
 - Smart Scheduling with timezone-aware slot suggestions and Calendar creation
-- Real-time-ish updates via auto-refetch; pluggable SSE/socket later
 - Responsive dashboard UI, dark/light theme
+- Periodic background refresh; sockets/SSE can be added later
 
-## Getting started
+## Quick Start
 
-1. Environment
-   - Create a Google Cloud project and OAuth2 credentials (Web app)
-   - Authorized redirect URI: `${PUBLIC_URL}/api/auth/google/callback`
-   - Create a MongoDB database (Atlas recommended)
-2. Set environment variables (DevServerControl env vars preferred)
-   - MONGO_URI
-   - JWT_SECRET
-   - CLIENT_URL (e.g. https://your-preview-url)
-   - GOOGLE_CLIENT_ID
-   - GOOGLE_CLIENT_SECRET
-   - GOOGLE_REDIRECT_URI (e.g. https://your-preview-url/api/auth/google/callback)
-3. Install & run
-   - pnpm install
-   - pnpm dev
-4. Build & run
-   - pnpm build && pnpm start
+1) Create Google OAuth credentials (Web application)
+- Authorized redirect URI: <YOUR_PUBLIC_URL>/api/auth/google/callback (use local dev URL in dev)
+
+2) Provision MongoDB (Atlas recommended)
+
+3) Configure environment variables (prefer using the platform env configuration)
+- MONGO_URI
+- JWT_SECRET
+- CLIENT_URL (e.g. http://localhost:8080)
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+- GOOGLE_REDIRECT_URI (e.g. http://localhost:8080/api/auth/google/callback)
+
+4) Install and run
+- pnpm install
+- pnpm dev
+
+5) Build and run production
+- pnpm build && pnpm start
 
 ## Deployment
 
-Use Netlify or Vercel MCP integrations.
+Use Netlify or Vercel via MCP integrations.
+- Netlify: [Connect Netlify MCP](#open-mcp-popover) and deploy.
+- Vercel: [Connect Vercel MCP](#open-mcp-popover) and deploy.
 
-- Netlify: [Connect Netlify MCP](#open-mcp-popover) and deploy; server is bundled as an Express app.
-- Vercel: [Connect Vercel MCP](#open-mcp-popover) for automatic deployment.
+Ensure env vars are configured in the hosting provider.
 
-## API Docs
+## API Documentation
 
-See docs/api.md
+See docs/api.md for endpoints, authentication, and example payloads.
+
+## Project Structure
+
+- client/: pages, components, hooks, lib (API client, auth store)
+- server/: controllers, routes, services, models, middleware, config
+- shared/: shared types between client and server
+
+## Development Notes
+
+- Follow MVC: controllers (HTTP), services (business logic), models (db), routes (wiring)
+- Strict typing across server and client; avoid any/unknown
+- Use middleware for auth, validation, and error handling
+- React Query handles caching; refetchOnWindowFocus disabled to avoid noisy refetch
+- Polling can be tuned via refetchInterval; real-time can be added via SSE/WebSocket
 
 ## Testing
 
 - pnpm test (Vitest)
 
-## Code Structure
+## Security & Privacy
 
-- server/: controllers, routes, services, models, middleware, config
-- client/: pages, components, hooks, store, lib
-- shared/: cross-shared types
+- Helmet, CORS, JWT-based auth
+- Stores only necessary Google OAuth tokens for Gmail/Calendar
 
-## Security
+## Contributing / Commit Conventions
 
-- Helmet, CORS, JWT auth
-- Store only OAuth tokens needed for Gmail/Calendar
-
-## Notes
-
-- AI suggestions are stubbed; integrate your LLM provider in server/services/emailService.ts
-- Real-time via SSE/Socket can be added under server/routes/stream.ts or sockets/
+- Small, focused commits with descriptive messages
+- Keep controllers thin; place logic in services
+- Maintain docs (README + docs/api.md) alongside code changes

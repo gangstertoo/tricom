@@ -12,9 +12,17 @@ import CalendarPage from "./pages/Calendar";
 import TemplatesPage from "./pages/Templates";
 import SettingsPage from "./pages/Settings";
 import AuthCallback from "./pages/AuthCallback";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
 import { ThemeProvider } from "next-themes";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -28,6 +36,8 @@ const App = () => (
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/templates" element={<TemplatesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
