@@ -1,7 +1,8 @@
 import { google } from "googleapis";
-import { env } from "./env";
+import { env, ensureGoogleEnv } from "./env";
 
 export function createOAuthClient() {
+  ensureGoogleEnv();
   return new google.auth.OAuth2(
     env.GOOGLE_CLIENT_ID,
     env.GOOGLE_CLIENT_SECRET,
