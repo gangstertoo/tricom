@@ -24,12 +24,14 @@ export function createServer() {
             env.CLIENT_URL,
             "https://*.builder.codes",
             "https://*.projects.builder.codes",
+            "https://*.builder.my",
+            "https://*.projects.builder.my",
           ],
         },
       },
     }),
   );
-  app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+  app.use(cors({ origin: true, credentials: true }));
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan("tiny"));
