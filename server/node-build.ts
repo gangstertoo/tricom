@@ -12,13 +12,15 @@ const distPath = path.join(__dirname, "../spa");
 // Serve static files
 app.use(express.static(distPath));
 
-// Handle React Router - serve index.html for all non-API routes
-app.get("/:path*", (req, res) => {
-  // Don't serve index.html for API routes
-  if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
-
+// Handle React Router - serve index.html for SPA routes only (not assets)
+app.use((req, res, next) => {
+  if (req.method !== "GET") return next();
+  if (req.path.startsWith("/api/") || req.path.startsWith("/health")) return next();
+  // If the request has a file extension (e.g., .js, .css, .map, .png), let static or 404 handle it
+  if (path.extname(req.path)) return next();
+  // Prefer HTML requests only
+  const accept = req.headers.accept || "";
+  if (!accept.includes("text/html")) return next();
   res.sendFile(path.join(distPath, "index.html"));
 });
 

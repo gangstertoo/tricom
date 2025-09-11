@@ -7,8 +7,6 @@ export async function connectDB() {
     console.warn("MongoDB URI not set. Skipping DB connection.");
     return;
   }
-  await mongoose.connect(env.MONGO_URI, {
-    dbName: "email_workflow_tool",
-  });
+  await mongoose.connect(env.MONGO_URI);
   console.log("✅ Connected to MongoDB");
 }

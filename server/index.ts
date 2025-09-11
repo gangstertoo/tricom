@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -27,14 +26,16 @@ export function createServer() {
   // Health
   app.get("/health", (_req, res) => res.json({ ok: true }));
 
-  // Connect DB lazily on first request
-  app.use(async (_req, _res, next) => {
-    await connectDB();
+  // API routes (connect DB only for API)
+  app.use("/api", async (_req, _res, next) => {
+    try {
+      await connectDB();
+    } catch (e) {
+      // Let error handler handle it on API requests
+      return next(e);
+    }
     next();
-  });
-
-  // API routes
-  app.use("/api", apiRoutes);
+  }, apiRoutes);
 
   // Errors
   app.use(errorHandler);

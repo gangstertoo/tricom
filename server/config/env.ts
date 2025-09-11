@@ -1,4 +1,10 @@
-import "dotenv/config";
+import { createRequire } from "module";
+
+// Load dotenv if available (local dev). In production (cpanel), env vars can be set via panel
+try {
+  const require = createRequire(import.meta.url);
+  require("dotenv/config");
+} catch {}
 
 export interface Env {
   NODE_ENV: "development" | "production" | "test";
