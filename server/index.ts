@@ -11,7 +11,7 @@ import { env } from "./config/env";
 export function createServer() {
   const app = express();
 
-  // Security & misc (allow embedding in Builder preview iframe)
+  // Security & misc
   app.use(
     helmet({
       frameguard: false,

@@ -40,11 +40,12 @@ A production-ready MERN + TypeScript app that reads Gmail, suggests AI replies w
 
 ## Deployment
 
-Use Netlify or Vercel via MCP integrations.
-- Netlify: [Connect Netlify MCP](#open-mcp-popover) and deploy.
-- Vercel: [Connect Vercel MCP](#open-mcp-popover) and deploy.
+You can deploy to providers like Netlify, Vercel, or Railway.
+- Netlify: configure build command `pnpm run build` and publish directory `dist/spa`.
+- Vercel: set build command `pnpm run build:client` and output directory `dist/spa` (or use a custom server if needed).
+- Railway: build server with `pnpm run build:server` and start with `node dist/server/node-build.mjs`.
 
-Ensure env vars are configured in the hosting provider.
+Ensure environment variables are configured in your hosting provider.
 
 ## API Documentation
 
